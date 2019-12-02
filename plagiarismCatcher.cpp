@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <queue>
+#include <algorithm>
 
 using namespace std;
 
@@ -35,6 +37,29 @@ void readFile(string dir, string fileName) {
 	}
 }
 
+void readWords(string dir, string fileName) {
+	string word;
+	ifstream myfiles((dir + "/" + fileName).c_str());
+	if(myfiles.is_open()) {
+		while(myfiles >> word) {
+			cout << word << endl;
+		}
+	}
+}
+
+void printChunks(string dir, string fileName) {
+	std::queue<string> chunks;
+	string word;
+	ifstream myfiles((dir + "/" + fileName).c_str());
+	if(myfiles.is_open()) {
+		while(myfiles >> word) {
+			transform(word.begin(), word.end(), word.begin(), ::toupper);	
+			chunks.push(word);
+			cout << word << endl;
+		}
+	}
+}	
+
 int main()
 {
     string dir = string("sm_doc_set");
@@ -48,7 +73,8 @@ int main()
         cout << i << files[i] << endl;
     }
 	
-	readFile(dir, files[0]);    
-
+//	readFile(dir, files[0]);    
+//	readWords(dir, files[0]);
+	printChunks(dir, files[0]);	
 	return 0;
 }
