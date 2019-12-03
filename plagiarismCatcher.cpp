@@ -54,9 +54,31 @@ void printChunks(string dir, string fileName) {
 	if(myfiles.is_open()) {
 		while(myfiles >> word) {
 			transform(word.begin(), word.end(), word.begin(), ::toupper);	
+			for(int i = 0; i < word.length(); i++) {
+				if(!((word[i] >= 'A' && word[i] <= 'Z') || (word[i] >= '0' && word[i] <= '9'))) {
+					word.erase(word.begin() + i);
+					i--;
+				}
+			}
 			chunks.push(word);
-			cout << word << endl;
 		}
+		vector<string> line = vector<string>();
+		for(int i = 0; i < 6; i++) {
+			line.push_back(chunks.front());
+			chunks.pop();
+		}
+		for(int i = 0; i < line.size(); i++) {
+			cout << line[i] << " ";
+		}
+		while(chunks.size() > 0) {
+			line.erase(line.begin());
+			line.push_back(chunks.front());
+			chunks.pop();
+			for(int i = 0; i < line.size(); i++) {
+				cout << line[i] << " ";
+			}
+			cout << endl;
+		}		
 	}
 }	
 
@@ -75,6 +97,7 @@ int main()
 	
 //	readFile(dir, files[0]);    
 //	readWords(dir, files[0]);
-	printChunks(dir, files[0]);	
+	printChunks(dir, files[1]);	
+	
 	return 0;
 }
