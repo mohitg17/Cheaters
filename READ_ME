@@ -1,5 +1,6 @@
 This program determines the similarity of documents in a directory and outputs files that have a substantial similarities, based on a user-inputted threshold.
 
+Mohit Gupta and Logan Winger
 Files:
 	plagiarismCatcher.cpp
 	makefile
