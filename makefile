@@ -1,2 +1,2 @@
 final:
-	g++ -o test plagiarismCatcher.cpp
+	g++ -o plagiarismCatcher plagiarismCatcher.cpp
