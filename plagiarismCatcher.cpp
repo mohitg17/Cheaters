@@ -83,7 +83,7 @@ void addNode(Node* hashTable[], int index, int fileNum) {
 }	
 	
 
-void printChunks(string dir, string fileName, Node* hashTable[], int fileNum) {
+void printChunks(string dir, string fileName, Node* hashTable[], int fileNum, int chunkSize) {
 	std::queue<string> chunks;
 	string word;
 	int index = 0;
@@ -100,7 +100,7 @@ void printChunks(string dir, string fileName, Node* hashTable[], int fileNum) {
 			chunks.push(word);
 		}
 		vector<string> line = vector<string>();
-		for(int i = 0; i < 6; i++) {
+		for(int i = 0; i < chunkSize; i++) {
 			line.push_back(chunks.front());
 			chunks.pop();
 		}
@@ -120,7 +120,7 @@ void printChunks(string dir, string fileName, Node* hashTable[], int fileNum) {
 			chunks.pop();
 			index = hashChunk(line);
 			addNode(hashTable, index, fileNum);
-			/*
+			/*	
 			for(int i = 0; i < line.size(); i++) {
 				cout << line[i] << " ";
 			}
@@ -131,11 +131,37 @@ void printChunks(string dir, string fileName, Node* hashTable[], int fileNum) {
 	}
 }	
 
+void countCollisions(int *count[], Node* hashTable[]) {
+    for(int i = 0; i < 1500007; i++) {
+		while(hashTable[i] != NULL) {
+			if(hashTable[i]->next != NULL) {
+				Node* temp = hashTable[i]->next;
+				Node* prev = hashTable[i];
+				while(temp != NULL) {
+					if(hashTable[i]->index != temp->index) {
+						count[hashTable[i]->index][temp->index] += 1;
+						prev = temp;
+						temp = temp->next;
+					}
+					else {
+						prev->next = temp->next;
+						Node* temp3 = temp;
+						temp = prev->next;
+						delete(temp3);
+					}
+				}
+				Node* temp2 = hashTable[i];
+				hashTable[i] = hashTable[i]->next;
+				delete(temp2);		
+			}
+		}
+	}
+}
 
-int main()
+int main(int argc, char* argv[])
 {   
 	Node* hashTable[1500007];
-    string dir = string("sm_doc_set");
+    string dir = argv[1];
     vector<string> files = vector<string>();
 
     getdir(dir,files);
@@ -149,12 +175,81 @@ int main()
 	for(int i = 0; i<1500007; i++){
 		hashTable[i] = NULL;
 	}
-		
 	
-//	readFile(dir, files[0]);    
-//	readWords(dir, files[0]);
-	int fileNum = 1;
-	printChunks(dir, files[1], hashTable, fileNum);	
-	int x = 0;	
+	for(int i = 0; i < files.size(); i++) {
+		printChunks(dir, files[i], hashTable, i, atoi(argv[2]));	
+	}
+	
+	int count[files.size()][files.size()];
+	
+	for(int i = 0; i < files.size(); i++) {
+        for (int j = 0; j < files.size(); j++) {
+            count[i][j] = 0;
+        }
+    }
+
+    for(int i = 0; i < 1500007; i++) {
+        while(hashTable[i] != NULL) {
+            if(hashTable[i]->next != NULL) {
+                Node* temp = hashTable[i]->next;
+                Node* prev = hashTable[i];
+                while(temp != NULL) {
+                    if(hashTable[i]->index != temp->index) {
+                        count[hashTable[i]->index][temp->index] += 1;
+                        prev = temp;
+                        temp = temp->next;
+                    }
+                    else {
+                        prev->next = temp->next;
+                        Node* temp3 = temp;
+                        temp = prev->next;
+                        delete(temp3);
+                    }
+                }
+                Node* temp2 = hashTable[i];
+                hashTable[i] = hashTable[i]->next;
+                delete(temp2);
+            }
+            else{
+                delete(hashTable[i]);
+                hashTable[i] = NULL;
+            }
+        }
+    }
+	/*	
+	for(int i = 0; i < files.size(); i++) {
+		for(int j = 0; j < files.size(); j++) {
+			cout << count[i][j] << " ";
+		}
+		cout << endl;	
+	}
+	*/
+	vector<vector<int> > matches; 
+	for(int i = 0; i < files.size(); i++) {
+		for(int j = 0; j < files.size(); j++) {
+			if(count[i][j] >= atoi(argv[3])) {
+				vector<int> arr;
+				arr.push_back(count[i][j]);
+				arr.push_back(i);
+				arr.push_back(j);
+				matches.push_back(arr);
+			}
+		}
+	}
+	
+	while(matches.size() > 0) {
+		int index = 0;
+		int max = 0;
+		for(int i = 0; i < matches.size(); i++) {
+			if(matches[i][0] > max) {
+				max = matches[i][0];
+				index = i;
+			}
+		}
+		cout << max << ": " << files[matches[index][1]] << ", " << files[matches[index][2]] << endl;
+		matches.erase(matches.begin() + index);
+	}
+				
+
 	return 0;
 }
