@@ -1,0 +1,11 @@
+Files:
+	plagiarismCatcher.cpp
+	makefile
+
+Type 'make' to compile the plagiarismCatcher.cpp
+
+Command Line Arguments:
+	./plagiarismCatcher [path_to_directory_containing_files] [size of chunks to compare] [minimum number of collisions to display]
+
+
+
